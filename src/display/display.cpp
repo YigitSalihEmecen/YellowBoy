@@ -1,5 +1,5 @@
 #include "display.h"
-#include "hw_config.h"
+#include "config.h"
 #include <Arduino.h>
 #include "emulator_bridge.h"
 

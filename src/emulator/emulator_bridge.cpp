@@ -2,7 +2,7 @@
 #include <SPI.h>
 #include <driver/dac.h>
 #include "display.h"
-#include "hw_config.h"
+#include "config.h"
 #include <stdlib.h>
 
 extern "C" {
