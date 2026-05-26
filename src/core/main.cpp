@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "hw_config.h"
+#include "config.h"
 #include "display.h"
 #include "pcf_input.h"
 #include "sd_manager.h"

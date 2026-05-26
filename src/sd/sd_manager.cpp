@@ -1,5 +1,5 @@
 #include "sd_manager.h"
-#include "hw_config.h"
+#include "config.h"
 #include <SD.h>
 #include <SPI.h>
 #include <Arduino.h>

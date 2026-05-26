@@ -1,5 +1,5 @@
 #include "pcf_input.h"
-#include "hw_config.h"
+#include "config.h"
 #include <Arduino.h>
 #include <Wire.h>
 #include <Preferences.h>
