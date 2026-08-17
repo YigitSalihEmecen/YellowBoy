@@ -2,6 +2,11 @@
 
 A high-performance Game Boy emulator built for the ESP32 Cheap Yellow Display (CYD) board, featuring a custom I2C physical controller, true analog audio, and a pixel-perfect retro aesthetic.
 
+<p align="center">
+  <img src="images/front.jpg" alt="YellowBoy Front View" width="48%" />
+  <img src="images/back.jpg" alt="YellowBoy Back View (Hardware)" width="48%" />
+</p>
+
 Mainly made for my hardware project "YellowBoy" which is a handheld game console. It will be released as an open source project on YouTube. Still work in progress like this emulator.
 
 Designed to not need PSRAM.
