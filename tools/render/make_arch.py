@@ -56,7 +56,7 @@ arr([(1040,470),(940,470)],G,'joypad',(990,455))
 arr([(940,690),(1040,690)],Y,'APU state',(990,675))
 arr([(1040,630),(990,630),(990,540),(940,540)],G,'frame pacing',(990,585),dash=True)
 arr([(1400,665),(1470,665)],G,'samples',(1435,645))
-hdr=T(40,66,'Firmware architecture',32,TX,'start',500,SERIF)+T(W-40,64,'dual-core ESP32 · no PSRAM · audio-paced emulation',14,MUTE,'end',500,SANS)
+hdr=T(40,66,'Firmware architecture',32,TX,'start',500,SERIF)+T(W-40,64,'current firmware: the Game Boy port · dual-core · no PSRAM',14,MUTE,'end',500,SANS)
 dots=''
 svg=(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}"><defs>{dots}</defs>'
      f'<rect width="{W}" height="{H}" rx="28" fill="{BG}"/>{"".join(o)}{hdr}</svg>')
