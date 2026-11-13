@@ -41,7 +41,8 @@ def jst(x,y,n,pitch=12,label=None,labels=None,vertical=False,lc='#3b2a00',exit='
         s+=f'<rect x="{cx-2.2:.1f}" y="{y+5}" width="4.4" height="5" fill="url(#gGold)"/>'
         pins[i]=(cx,y if exit=='top' else y+h)
         if labels: s+=T(cx,(y+h+fs+3) if exit=='top' else (y-4),labels[i],fs,lc,weight=800)
-    if label: s+=T(x+w/2,(y-6) if exit=='top' else (y+h+fs+6),label,fs+1.6,lc,weight=800)
+    if label:
+        s+=T(x+w/2,y-6,label,fs+1.6,lc,weight=800) if exit=='top' else T(x-8,y+h/2+(fs+1.6)*0.35,label,fs+1.6,lc,'end',800)
     return s,pins
 
 def cyd(x,y,s=6.4):
@@ -94,10 +95,10 @@ def cyd(x,y,s=6.4):
     o+=s3; pins['SPK+']=p3[0]; pins['SPK-']=p3[1]
     s4,p4=jst(x+62*s,y+40*s,4,pitch=3.6*s,fs=max(6.5,1.1*s),labels=['GND','IO35','IO22','IO21'],label='P3',exit='bottom')
     o+=s4
-    o+=T(x+4*s,y+H-3*s,'ESP32-2432S028R',max(7,1.2*s),'#7a4300',anchor='start',weight=800)
+    o+=T(x+8*s,y+H-3*s,'ESP32-2432S028R',max(7,1.2*s),'#7a4300',anchor='start',weight=800)
     return o,pins
 
-def pcf(x,y,s=7):
+def pcf(x,y,s=7,bridge=False):
     W,H=22*s,20*s
     o=f'<g filter="url(#sh)"><rect x="{x}" y="{y}" width="{W}" height="{H}" rx="{1.5*s}" fill="url(#gPur)" stroke="#141413" stroke-width="1.5"/></g>'
     L=['VCC','GND','SCL','SDA','A0','A1','A2','INT']; Rr=['P7','P6','P5','P4','P3','P2','P1','P0']
@@ -106,8 +107,12 @@ def pcf(x,y,s=7):
         py=y+(2.2+i*2.2)*s
         for side,lab,xx in ((0,L[i],x+2*s),(1,Rr[i],x+W-2*s)):
             o+=f'<circle cx="{xx:.1f}" cy="{py:.1f}" r="{0.9*s:.1f}" fill="url(#gGold)"/><circle cx="{xx:.1f}" cy="{py:.1f}" r="{0.42*s:.1f}" fill="#2a1546"/>'
-            o+=T(xx+(1.7*s if side==0 else -1.7*s),py+3,lab,7.5,'#f3eaff',anchor='start' if side==0 else 'end',weight=700)
+            o+=T(xx+((2.6 if bridge else 1.7)*s if side==0 else -1.7*s),py+3,lab,7.5,'#f3eaff',anchor='start' if side==0 else 'end',weight=700)
             pins[lab]=(xx,py)
+    if bridge:
+        bx=x+3.35*s; ys=[pins[k][1] for k in ('GND','A0','A1','A2')]
+        o+=f'<path d="M{bx:.1f} {ys[0]:.1f}V{ys[-1]:.1f}" stroke="#E9E3F5" stroke-width="2.4"/>'
+        for yy in ys: o+=f'<path d="M{x+2.9*s:.1f} {yy:.1f}H{bx:.1f}" stroke="#E9E3F5" stroke-width="2.4"/><circle cx="{bx:.1f}" cy="{yy:.1f}" r="2.6" fill="#E9E3F5"/>'
     o+=soic(x+7.5*s,y+6*s,7*s,8*s,8,'PCF8574T',fs=7.5,rot=90)
     o+=f'<circle cx="{x+W/2:.1f}" cy="{y+H-2.6*s:.1f}" r="{1.2*s:.1f}" fill="#1b0f2b" stroke="#d8c4ff" stroke-width="1.5"/>'
     for i in range(3): o+=smd(x+(8+i*2.4)*s,y+2*s,1.6*s,0.8*s)
@@ -133,27 +138,27 @@ def speaker(cx,cy,s=6):
     o+=f'<circle cx="{cx}" cy="{cy}" r="{r*0.52}" fill="none" stroke="#3c3e44" stroke-width="2"/>'
     o+=f'<circle cx="{cx}" cy="{cy}" r="{r*0.3}" fill="#2a2b30" stroke="#55575d"/>'
     o+=T(cx,cy-2,'8Ω',13,'#e6e7ea',weight=800)+T(cx,cy+12,'0.5W',9,'#b8bbc2',weight=700)
-    pins={'+':(cx+r*0.55,cy-r*0.84),'-':(cx+r*0.75,cy-r*0.66)}
+    pins={'+':(cx+r*0.80,cy-r*0.60),'-':(cx+r*0.45,cy-r*0.89)}
     o+=f'<rect x="{pins["+"][0]-6:.0f}" y="{pins["+"][1]-4:.0f}" width="22" height="9" rx="2" fill="#e3c27a" transform="rotate(40 {pins["+"][0]} {pins["+"][1]})"/>'
     return o,pins
 
-def boost(x,y,s=7):
+def boost(x,y,s=7,note=True):
     W,H=23*s,17*s
     o=f'<g filter="url(#sh)"><rect x="{x}" y="{y}" width="{W}" height="{H}" rx="{1*s}" fill="url(#gBlk)" stroke="#141413" stroke-width="1.5"/></g>'
     # USB-C on right edge
     o+=f'<rect x="{x+W-6*s}" y="{y+4.8*s}" width="{7.5*s}" height="{7.4*s}" rx="3" fill="url(#gMetal)" stroke="#8e9298"/><rect x="{x+W-5*s}" y="{y+6.6*s}" width="{5.5*s}" height="{3.8*s}" rx="6" fill="#2a2c30"/>'
     # inductor
-    o+=f'<rect x="{x+2*s}" y="{y+6.5*s}" width="{6.6*s}" height="{6.6*s}" rx="{1.2*s}" fill="#3c3d42" stroke="#55575d"/>'+T(x+5.3*s,y+10.6*s,'100',11,'#a9abb0',weight=800)
+    o+=f'<rect x="{x+1.5*s}" y="{y+5.6*s}" width="{6.2*s}" height="{6.2*s}" rx="{1.2*s}" fill="#3c3d42" stroke="#55575d"/>'+T(x+4.6*s,y+9.4*s,'100',11,'#a9abb0',weight=800)
     o+=soic(x+10*s,y+4*s,5*s,3.5*s,4,'',fs=6)+soic(x+10*s,y+11*s,5*s,3.5*s,4,'',fs=6)
     o+=f'<circle cx="{x+15*s}" cy="{y+2.2*s}" r="{1.3*s}" fill="#f4f4f4"/><path d="M{x+14.2*s} {y+2.2*s}h{1.6*s}" stroke="#555" stroke-width="2"/>'
     o+=f'<rect x="{x+16.5*s}" y="{y+13.5*s}" width="{1.2*s}" height="{0.8*s}" fill="#4cff7a"/><rect x="{x+18.5*s}" y="{y+13.5*s}" width="{1.2*s}" height="{0.8*s}" fill="#ff4c4c"/>'
     pins={}
-    for i,(lab,px,py) in enumerate((('B+',2.6,2.2),('B−',6.6,2.2),('OUT+',2.6,15),('OUT−',6.6,15))):
+    for i,(lab,px,py) in enumerate((('OUT−',2.6,2.2),('OUT+',6.6,2.2),('B+',2.6,15),('B−',6.6,15))):
         cx,cy=x+px*s,y+py*s
         o+=f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{1.1*s:.1f}" fill="url(#gGold)"/><circle cx="{cx:.1f}" cy="{cy:.1f}" r="{0.45*s:.1f}" fill="#111"/>'
-        o+=T(cx,cy+(-1.7*s if py<5 else 2.6*s),lab,7.5,'#f0f0f0',weight=800)
+        o+=T(cx,cy+(2.6*s if py<5 else -1.7*s),lab,7.5,'#f0f0f0',weight=800)
         pins[lab]=(cx,cy)
-    o+=T(x+W/2,y+H+16,'set output → 5 V',8,'#141413',weight=700)
+    if note: o+=T(x+W/2,y+H+16,'set output → 5 V',8,'#141413',weight=700)
     return o,pins
 
 def battery(x,y,s=6,L=45,D=13):
