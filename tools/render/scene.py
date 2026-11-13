@@ -29,7 +29,7 @@ def parts():
     P['shell']=(load(D+'Shell.stl'),COL['shell'])
     m=load(D+'Shell-Color.stl').copy(); m[...,2]+=0.04
     P['mask']=(m,COL['ink'])
-    b=load(D+'button.stl'); b2=b.copy(); b2[...,0]+=60
+    b=load(D+'button.stl')+np.array([0,0,1.8]); b2=b.copy(); b2[...,0]+=60  # resting height: crosses stand proud of the face
     P['btn_l']=(b,COL['olive']); P['btn_r']=(b2,COL['olive'])
     p=load(D+'d-pad.stl').copy(); p[...,2]-=15
     P['plate']=(p,COL['plate'])
